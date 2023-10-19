@@ -1,0 +1,92 @@
+// Copyright 2022-2023, Georgescu Mihai-Alexandru, 322CA
+
+Tema 4 - Protocoale de Comunicatie
+===================================
+Client Web. Comunicatie cu REST API.
+===================================
+
+Pornind de la laboratorul 9 si folosind biblioteca "parson", recomandata pentru a parsa raspunsurile primite
+de la server, am implementat un client Web care comunica cu un REST API. Acesta permite utilizatorului sa
+trimita comenzi de tip POST, GET si DELETE pentru a interactiona cu serverul. Clientul poate realiza actiuni
+precum register, login, logout, poate accesa libraria, detaliile despre carti sau despre o singura carte,
+ori poate adauga sau sterge o carte.
+
+Fisierul in care am realizat implementarea este client.c, fisierele requests.c si requests.h, helpers.c si helpers.h,
+buffer.c si buffer.h fiind preluate din laboratorul 9 si usor modificate pentru a se potrivi cu cerintele temei.
+
+In cadrul functiei main am implementat un meniu cu ajutorul caruia utilizatorul poate interactiona cu serverul,
+care preia comenzile primite ca input. Pentru fiecare comanda (actiune) in parte, deschid o noua conexiune TCP si tratez erorile ce pot aparea.
+
+========
+register
+========
+-> Primesc credentialele unui utilizator (username, parola), le parsez in format JSON si le trimit serverului
+la ruta de acces ceruta printr-o cerere POST.
+-> In cazul in care response-ul de la server contine status code-ul 201, user-ul a fost creat cu succes.
+-> Permit introducerea unui username si a unei parole, iar apoi afisez un mesaj de eroare in cazul in care una din ele nu a fost introdusa corect (contine spati
+
+=====
+login
+=====
+-> Ruta de acces pentru login va fi diferita, insa similar cu register formez obiectul JSON si trimit cererea
+la server cu ajutorul functiei compute_post_request.
+-> In cazul in care response-ul de la server nu contine eroare, voi retine intr-o variabila logged_in faptul ca
+un user este logat in library si parsez response ul pentru a retine cookie-ul de sesiune.
+
+=======
+logout
+=======
+-> Actiunea de logout verifica intai daca este vreun user logat in biblioteca, iar daca este logat, trimite
+o cerere GET catre server la ruta de acces ceruta si afiseaza un mesaj corespunzator.
+-> In cazul realizarii unui logout cu succes, resetez variabilele logged_in si in_library, alaturi de cookie-ul
+de sesiune si token-ul.
+
+=============
+enter_library
+=============
+-> Pentru a putea accesa libraria, trebuie sa fiu logat, altfel voi primi un mesaj de eroare.
+-> Realizez o cerere GET la ruta de acces ceruta, iar daca primesc un raspuns fara eroare, parsez response-ul
+de la server pentru a retine intr-o variabila token-ul jwt, afisand apoi un mesaj corespunzator.
+
+=========
+get_books
+=========
+-> Actiunea de get_books presupune si ea ca user-ul sa fie deja logat in library. Realizez o cerere GET la ruta
+de acces data, apoi ma uit in response-ul primit de la server si parsez JSON-ul de la final, folosindu-ma
+de functiile strstr, json_parse_string si json_serialize_to_string_pretty pentru a afisa lista de carti din biblioteca.
+
+=========
+get_book
+=========
+-> Comanda este similara cu get_books, insa asteapta ca input si un id valid de carte. Verific ca id-ul sa fie
+un numar valid, apoi formez folosindu-ma de strcat ruta de acces pentru cerea GET. Daca primesc un raspuns fara
+eroare, parsez JSON-ul de la final si afisez detaliile despre cartea cu id-ul dat.
+
+========
+add_book
+========
+-> Actiunea de add_book se bazeaza pe primirea unor campuri (title, author etc) pe care le citesc de la tastatura
+si cu ajutorul carora formez un obiect JSON, pe care il trimit la server cu ajutorul functiei compute_post_request.
+-> In cazul unui raspuns fara eroare de la server, afisez un mesaj corespunzator. 
+
+===========
+delete_book
+===========
+-> Foarte similar cu actiunea get_book, in delete_book verific din nou ca id-ul cartii sa fie un numar valid,
+apoi formez ruta de acces pentru cererea DELETE, pe care o trimit cu ajutorul functiei compute_delete_request.
+-> In cazul unui raspuns fara eroare de la server, afisez un mesaj de succes.
+
+=========
+Feedback:
+========= 
+A fost o tema la care chiar am lucrat cu placere, fiind legata de domeniul Web, care pot spune ca ma
+pasioneaza intr-o oarecare masura.
+La nivel de probleme intampinate, nu am reusit sa inteleg comportamentul ultimelor 2 teste. Rulat individual, testul invalid_book_pages se comporta normal, insa daca testez toate testele cu "ALL", acesta genereaza atunci cand ajunge in enter_library eroarea 401 Unauthorized {"error":"You are not logged in!"}, cu toate ca logarea se face anterior cu succes. Acest flow de login - enter_library a mers perfect pentru celelalte teste rulate de checker, respectiv teste introduse "de mana", motiv pentru care nu imi explic comportamentul din cadrul testului invalid_book_pages. Ultimul test afiseaza, de asemenea, o eroare similara. Cu toate acestea, la variate teste de mana incercate nu intampin aceasta problema ori alte probleme.
+
+==========
+Referinte
+==========
+[1] https://pcom.pages.upb.ro/labs/lab9/lecture.html
+[2] https://beta.computer-networking.info/syllabus/default/protocols/http.html
+[3] https://github.com/kgabis/parson
+[4] https://www.postman.com
