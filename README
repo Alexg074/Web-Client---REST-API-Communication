@@ -3,8 +3,8 @@ Client Web. Comunicatie cu REST API.
 ===================================
 
 Pornind de la laboratorul 9 si folosind biblioteca "parson", recomandata pentru a parsa raspunsurile primite
-de la server, am implementat un client Web care comunica cu un REST API. Acesta permite utilizatorului sa
-trimita comenzi de tip POST, GET si DELETE pentru a interactiona cu serverul. Clientul poate realiza actiuni
+de la server, am implementat un client Web care comunica cu server-ul prin protocolul HTTP. Acesta permite utilizatorului sa
+trimita comenzi de tip POST, GET si DELETE pentru a interactiona cu REST API-ul serverul-ului. Clientul poate realiza actiuni
 precum register, login, logout, poate accesa libraria, detaliile despre carti sau despre o singura carte,
 ori poate adauga sau sterge o carte.
 
